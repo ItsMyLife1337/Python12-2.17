@@ -44,6 +44,7 @@ def display_workers(staff):
             )
         )
         print(line)
+
         # Вывести данные о всех сотрудниках.
         for idx, worker in enumerate(staff, 1):
             print(
@@ -54,9 +55,10 @@ def display_workers(staff):
                     worker.get('year', 0)
                 )
             )
-            print(line)
-        else:
-            print("Список работников пуст.")
+        print(line)
+
+    else:
+        print("Список работников пуст.")
 
 
 def select_workers(staff, period):
@@ -65,12 +67,14 @@ def select_workers(staff, period):
     """
     # Получить текущую дату.
     today = date.today()
+
     # Сформировать список работников.
     result = []
     for employee in staff:
         if today.year - employee.get('year', today.year) >= period:
             result.append(employee)
-        # Возвратить список выбранных работников.
+
+    # Возвратить список выбранных работников.
     return result
 
 
@@ -79,7 +83,7 @@ def save_workers(file_name, staff):
     Сохранить всех работников в файл JSON.
     """
     # Открыть файл с заданным именем для записи.
-    with open(file_name, "w", encoding="utf-8") as fout:
+    with open(file_name, "w", encoding="utf-8", errors="ignore") as fout:
         # Выполнить сериализацию данных в формат JSON.
         # Для поддержки кирилицы установим ensure_ascii=False
         json.dump(staff, fout, ensure_ascii=False, indent=4)
@@ -90,7 +94,7 @@ def load_workers(file_name):
     Загрузить всех работников из файла JSON.
     """
     # Открыть файл с заданным именем для чтения.
-    with open(file_name, "r", encoding="utf-8") as fin:
+    with open(file_name, "r", encoding="utf-8", errors="ignore") as fin:
         return json.load(fin)
 
 
@@ -103,15 +107,6 @@ def main(command_line=None):
         help="The data file name"
     )
 
-
-def main(command_line=None):
-    # Создать родительский парсер для определения имени файла.
-    file_parser = argparse.ArgumentParser(add_help=False)
-    file_parser.add_argument(
-        "filename",
-        action="store",
-        help="The data file name"
-    )
     # Создать основной парсер командной строки.
     parser = argparse.ArgumentParser("workers")
     parser.add_argument(
@@ -119,7 +114,9 @@ def main(command_line=None):
         action="version",
         version="%(prog)s 0.1.0"
     )
+
     subparsers = parser.add_subparsers(dest="command")
+
     # Создать субпарсер для добавления работника.
     add = subparsers.add_parser(
         "add",
@@ -147,12 +144,14 @@ def main(command_line=None):
         required=True,
         help="The year of hiring"
     )
+
     # Создать субпарсер для отображения всех работников.
     _ = subparsers.add_parser(
         "display",
         parents=[file_parser],
         help="Display all workers"
     )
+
     # Создать субпарсер для выбора работников.
     select = subparsers.add_parser(
         "select",
@@ -167,6 +166,7 @@ def main(command_line=None):
         required=True,
         help="The required period"
     )
+
     # Выполнить разбор аргументов командной строки.
     args = parser.parse_args(command_line)
 
@@ -186,17 +186,20 @@ def main(command_line=None):
             args.year
         )
         is_dirty = True
+
     # Отобразить всех работников.
     elif args.command == "display":
         display_workers(workers)
+
     # Выбрать требуемых рааботников.
     elif args.command == "select":
         selected = select_workers(workers, args.period)
         display_workers(selected)
-        # Сохранить данные в файл, если список работников был изменен.
-        if is_dirty:
-            save_workers(args.filename, workers)
+
+    # Сохранить данные в файл, если список работников был изменен.
+    if is_dirty:
+        save_workers(args.filename, workers)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
