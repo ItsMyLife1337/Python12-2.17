@@ -1,0 +1,27 @@
+[
+    {
+        "name": "Иванов Антон",
+        "group": "1",
+        "progress": 4
+    },
+    {
+        "name": "Черкассов ВЛ",
+        "group": "1",
+        "progress": 2
+    },
+    {
+        "name": "Сидоров БК",
+        "group": "2",
+        "progress": 5
+    },
+    {
+        "name": "Сидоров ВИ",
+        "group": "2",
+        "progress": 2
+    },
+    {
+        "name": "Сидоров БК",
+        "group": "12",
+        "progress": 5
+    }
+]

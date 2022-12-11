@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import argparse
 import json
 import os
+import argparse
 
 
-def get_student(students, name, group, progress):
+def add_student(students, name, group, progress):
     # Запросить данные о студенте.
     students.append(
         {
             "name": name,
             "group": group,
-            "progress": progress
+            "mark": progress
         }
     )
+
     if len(students) > 1:
         students.sort(key=lambda item: item.get('group')[::-1])
     return students
@@ -22,38 +23,6 @@ def get_student(students, name, group, progress):
 
 def list(students):
     # Заголовок таблицы.
-    if students:
-        line = '+-{}-+-{}-+-{}-+-{}-+'.format(
-            '-' * 4,
-            '-' * 30,
-            '-' * 20,
-            '-' * 8
-        )
-        print(line)
-        print(
-            '| {:^4} | {:^30} | {:^20} | {:^8} |'.format(
-                "№",
-                "Ф.И.О.",
-                "Группа",
-                "Оценка"
-            )
-        )
-        print(line)
-
-        # Вывести данные о всех студентах.
-        for idx, student in enumerate(students, 1):
-            print(
-                '| {:>4} | {:<30} | {:<20} | {:>8} |'.format(
-                    idx,
-                    student.get('name', ''),
-                    student.get('group', ''),
-                    student.get('progress', 0)
-                )
-            )
-            print(line)
-
-
-def show_selected(students):
     line = '+-{}-+-{}-+-{}-+-{}-+'.format(
         '-' * 4,
         '-' * 30,
@@ -66,27 +35,43 @@ def show_selected(students):
             "№",
             "Ф.И.О.",
             "Группа",
-            "Оценка"
+            "Успеваемость"
         )
     )
     print(line)
+
+    # Вывести данные о всех студентах.
+    for idx, student in enumerate(students, 1):
+        ma = student.get('mark', '')
+        print(
+            '| {:^4} | {:<30} | {:<20} | {}.{}.{}.{}.{:<7} |'.format(
+                idx,
+                student.get('name', ''),
+                student.get('group', ''),
+                ma[0],
+                ma[1],
+                ma[2],
+                ma[3],
+                ma[4]
+            )
+        )
+        print(line)
+
+
+def select_students(students):
     # Инициализировать счетчик.
     count = 0
     # Проверить сведения студентов из списка.
     for student in students:
-        if student.get('progress', 0) >= 4.0:
-            count += 1
+        mark = student.get('mark', '')
+        if sum(mark) / max(len(mark), 1) >= 4.0:
             print(
-                '| {:>4} | {:<30} | {:<20} | {:>15} |'.format(
-                    count,
-                    student.get('name', ''),
-                    student.get('group', ''),
-                    student.get('progress', 0)
-                )
+                '{:>4} {}'.format('*', student.get('name', '')),
+                '{:>1} {}'.format('группа №', student.get('group', ''))
             )
-    print(line)
+            count += 1
     if count == 0:
-        print("Студенты с оценкой 4.0 и выше не найдены.")
+        print("Студенты с баллом 4.0 и выше не найдены.")
 
 
 def help_1():
@@ -110,7 +95,6 @@ def load_students(file_name):
 
 
 def main(command_line=None):
-    # Список студентов.
     # Создать родительский парсер для определения имени файла.
     file_parser = argparse.ArgumentParser(add_help=False)
     file_parser.add_argument(
@@ -118,14 +102,18 @@ def main(command_line=None):
         action="store",
         help="The data file name"
     )
+
     # Создать основной парсер командной строки.
     parser = argparse.ArgumentParser("students")
     parser.add_argument(
         "--version",
         action="version",
+        help="The main parser",
         version="%(prog)s 0.1.0"
     )
+
     subparsers = parser.add_subparsers(dest="command")
+
     # Создать субпарсер для добавления студента.
     add = subparsers.add_parser(
         "add",
@@ -137,54 +125,65 @@ def main(command_line=None):
         "--name",
         action="store",
         required=True,
-        help="The students's name"
+        help="The student's name"
     )
     add.add_argument(
         "-g",
         "--group",
+        type=int,
         action="store",
-        help="The group's post"
+        help="The student's group"
     )
     add.add_argument(
         "-p",
         "--progress",
         action="store",
-        type=int,
         required=True,
-        help="The mark"
+        help="The student's grade"
     )
+
     # Создать субпарсер для отображения всех студентов.
     _ = subparsers.add_parser(
-        "list",
+        "display",
         parents=[file_parser],
-        help="list all students"
+        help="Display all students"
     )
-    # Создать субпарсер для выбора студентов с оценкой >= 4-рём.
+
+    # Создать субпарсер для выбора студентов.
     select = subparsers.add_parser(
         "select",
         parents=[file_parser],
         help="Select the students"
     )
 
+    # Выполнить разбор аргументов командной строки.
     args = parser.parse_args(command_line)
 
+    # Загрузить всех студентов из файла, если файл существует.
     is_dirty = False
     if os.path.exists(args.filename):
         students = load_students(args.filename)
     else:
         students = []
+
+    # Добавить работника.
+
     if args.command == "add":
-        students = get_student(
+        students = add_student(
             students,
             args.name,
             args.group,
             args.progress
         )
         is_dirty = True
-    elif args.command == "list":
+    # Отобразить всех студентов.
+    elif args.command == "display":
         list(students)
+    # Выбрать требуемых студентов.
     elif args.command == "select":
-        show_selected(students)
+        select_students(students)
+
+    # Сохранить данные в файл, если список студентов был изменен.
     if is_dirty:
         save_students(args.filename, students)
 
