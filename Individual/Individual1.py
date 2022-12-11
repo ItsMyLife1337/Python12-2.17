@@ -15,8 +15,6 @@ def get_student(students, name, group, progress):
             "progress": progress
         }
     )
-    if len(students) > 1:
-        students.sort(key=lambda item: item.get('group')[::-1])
     return students
 
 
@@ -164,6 +162,13 @@ def main(command_line=None):
         "select",
         parents=[file_parser],
         help="Select the students"
+    )
+    select.add_argument(
+        "-s",
+        "--select",
+        action="store",
+        required=True,
+        help="The required select"
     )
 
     args = parser.parse_args(command_line)
