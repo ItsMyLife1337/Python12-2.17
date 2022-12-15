@@ -170,7 +170,7 @@ def main(command_line=None):
     # Выполнить разбор аргументов командной строки.
     args = parser.parse_args(command_line)
 
-    # Загрузить всех работников из файла, если файл существует.
+    # Загрузить всех работников из файла, если файл существует .
     is_dirty = False
     if os.path.exists(args.filename):
         workers = load_workers(args.filename)
