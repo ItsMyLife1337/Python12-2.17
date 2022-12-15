@@ -139,7 +139,7 @@ def main(command_line=None):
         "--progress",
         action="store",
         required=True,
-        help="The student's grade"
+        help="The student's mark"
     )
 
     # Создать субпарсер для отображения всех студентов.

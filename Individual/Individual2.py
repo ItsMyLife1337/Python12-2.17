@@ -5,13 +5,13 @@ import click
 import json
 
 
-def get_student(students_load, name, group, progress, file_name):
+def get_student(students_load, name, group, grade, file_name):
     # Запросить данные о студенте.
     students_load.append(
         {
             "name": name,
             "group": group,
-            "progress": progress
+            "grade": grade
         }
     )
     with open(file_name, "w", encoding="utf-8") as fout:
@@ -19,7 +19,7 @@ def get_student(students_load, name, group, progress, file_name):
     return load_students(file_name)
 
 
-def list(students_load):
+def show_list(students_load):
     # Заголовок таблицы.
     if students_load:
         line = '+-{}-+-{}-+-{}-+-{}-+'.format(
@@ -46,7 +46,7 @@ def list(students_load):
                     idx,
                     student.get('name', ''),
                     student.get('group', ''),
-                    student.get('progress', 0)
+                    student.get('grade', 0)
                 )
             )
             print(line)
@@ -73,14 +73,15 @@ def show_selected(students_load):
     count = 0
     # Проверить сведения студентов из списка.
     for i, student in enumerate(students_load, 1):
-        if student.get('progress', 0) == 4 or student.get('progress', 0) == 5:
+        grade = [int(x) for x in (student.get('grade', '').split())]
+        if sum(grade) / max(len(grade), 1) >= 4.0:
             count += 1
             print(
                 '| {:>4} | {:<30} | {:<20} | {:>15} |'.format(
                     count,
                     student.get('name', ''),
                     student.get('group', ''),
-                    student.get('progress', 0)
+                    student.get('grade', 0)
                 )
             )
     print(line)
@@ -91,7 +92,7 @@ def show_selected(students_load):
 def help_1():
     print("Список команд:\n")
     print("add - добавить студента;")
-    print("list - вывести список студентов;")
+    print("display - вывести список студентов;")
     print("select - запросить студентов с баллом выше 4.0;")
     print("save - сохранить список студентов;")
     print("load - загрузить список студентов;")
@@ -109,14 +110,14 @@ def load_students(file_name):
 @click.argument('file_name')
 @click.option("-n", "--name")
 @click.option("-g", "--group")
-@click.option("-pr", "--progress")
-def main(command, name, group, progress, file_name):
+@click.option("-gr", "--grade")
+def main(command, name, group, grade, file_name):
     students_load = load_students(file_name)
     if command == 'add':
-        get_student(students_load, name, group, progress, file_name)
+        get_student(students_load, name, group, grade, file_name)
         click.secho('Данные добавлены')
     elif command == 'display':
-        list(students_load)
+        show_list(students_load)
     elif command == 'select':
         show_selected(students_load)
 
