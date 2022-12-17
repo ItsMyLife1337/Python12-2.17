@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Ivanov",
+        "group": 3,
+        "grade": "2 2 3 2 2"
+    },
+    {
+        "name": "Arsen Wrapper",
+        "group": "17",
+        "grade": "5 4 5 5 5"
+    },
+    {
+        "name": "Dmirtiy",
+        "group": 12,
+        "grade": "5 4 5 5 5"
+    }
+]
