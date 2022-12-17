@@ -93,8 +93,8 @@ def load_students(file_name):
 @click.argument('filename')
 @click.option('--command', '-c', help="Commands")
 @click.option('--name', '-n', help="The students name")
-@click.option('--group', '-gr', type=int, help="The plane's numer")
-@click.option('--grade', '-g', help="The plane's type")
+@click.option('--group', '-gr', type=int, help="The group number")
+@click.option('--grade', '-g', help="The students marks")
 def main(command, name, group, grade, filename):
     # Загрузить всех студентов из файла, если файл существует.
     is_dirty = False
