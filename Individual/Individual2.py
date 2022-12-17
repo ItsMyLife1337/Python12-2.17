@@ -22,7 +22,7 @@ def add_student(students, name, group, grade):
 
 def show_list(students):
     """
-    Вывести список студентов
+    Вывести список с тудентов
     """
     # Заголовок таблицы.
     if students:
@@ -39,7 +39,7 @@ def show_list(students):
                 "№",
                 "Ф.И.О.",
                 "Группа",
-                "Успеваемость"
+                "Успеваемость "
             )
         )
         print(line)
