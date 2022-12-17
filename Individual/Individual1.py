@@ -199,7 +199,7 @@ def main(command_line=None):
     else:
         students = []
 
-    # Добавить работника.
+    # Добавить студента.
 
     if args.command == "add":
         students = add_student(
